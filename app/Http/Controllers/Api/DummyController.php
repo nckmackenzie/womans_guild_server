@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class DummyController extends Controller
 {
@@ -12,6 +13,7 @@ class DummyController extends Controller
      */
     public function index()
     {
+        Log::info('Test API was hit!');
         return response()->json(['data' => 'works','success' => true]);
     }
 
