@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\BudgetController;
+use App\Http\Controllers\Api\DummyController;
 use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\IncomeController;
 use App\Http\Controllers\Api\MemberController;
@@ -44,7 +45,7 @@ Route::middleware('auth:sanctum')->group(function(){
     });
 });
 
-// Route::get('/test',[IncomeController::class,'index']);
+Route::get('/test',[DummyController::class,'index']);
 // Route::controller(ReportController::class)->group(function() {
 //     Route::get('/reports/budgetExpense','budgetExpense');
 // });
