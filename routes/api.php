@@ -29,6 +29,7 @@ Route::middleware([CustomAuthMiddleware::class])->group(function(){
         return $request->user();
     });
 
+    Route::patch('/changePassword', [AuthController::class, 'changePassword']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::post('/users',[UserController::class,'store']);
