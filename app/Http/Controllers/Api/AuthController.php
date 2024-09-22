@@ -48,6 +48,28 @@ class AuthController extends Controller
         return response()->json(['token' => $token->payload,'user'=> $user]);
     }
 
+    public function changePassword(Request $request)
+    {
+        $validated = Validator::make($request->all(), [
+            'old_password' => ['required','min:8'],
+            'new_password' => ['required','min:8'],
+            'confirm_password' => ['required','same:new_password'],
+        ]);
+
+        if($validated->fails()){
+            return response()->json(['errors' => $validated->errors()], 422);
+        }
+
+        $user = User::where('id', $request->user()->id)->first();
+        if (!Hash::check($request->old_password, $user->password)) {
+            return response()->json(['errors' => 'Incorrect old password'], 401);
+        }
+        $user->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+        return response()->json(['message' => 'Password updated successfully'], 200);
+    }
+
     public function logout(Request $request)
     {
         $session = Session::where('user_id', $request->user()->id)->first();
