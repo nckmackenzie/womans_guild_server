@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Session;
 use App\Models\User;
+use App\Services\SmsService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,7 +45,6 @@ class AuthController extends Controller
                                     'payload' => Str::random(60),
                                     'last_activity' => strtotime(date("Y-m-d h:i:sa"))
                                 ]);         
-
         return response()->json(['token' => $token->payload,'user'=> $user]);
     }
 
@@ -68,6 +68,32 @@ class AuthController extends Controller
             'password' => Hash::make($request->new_password),
         ]);
         return response()->json(['message' => 'Password updated successfully'], 200);
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $validated = Validator::make($request->all(), [
+            'contact' => ['required', 'exists:users,contact'],
+        ]);
+
+        if($validated->fails()){
+            return response()->json(['message' => 'You have entered an invalid phone number or one that isn\'t registered'], 422);
+            // return response()->json(['errors' => $validated->errors()], 422);
+        }
+
+        $user = User::where('contact', $request->contact)->first();
+        if(!$user){
+            return response()->json(['errors' => 'Entered phone number doesn\'t exist'], 404);
+        } 
+
+        $token = Str::random(60);
+
+        DB::table('password_resets')->insert([
+            'user_id' => $user->id,
+            'token' => $token,
+        ]);
+
+        return response()->json(['message' => 'Password reset successful','token' => $token], 200);
     }
 
     public function logout(Request $request)
