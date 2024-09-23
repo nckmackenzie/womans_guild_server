@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\BudgetController;
 use App\Http\Controllers\Api\DummyController;
 use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\IncomeController;
+use App\Http\Controllers\Api\IncomeProjectionController;
 use App\Http\Controllers\Api\MemberController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\SmsController;
@@ -47,6 +48,7 @@ Route::middleware([CustomAuthMiddleware::class])->group(function(){
     Route::apiResource('incomes',IncomeController::class);
     Route::apiResource('budgets',BudgetController::class);
     Route::apiResource('yearlyContributions',YearlyContributionController::class)->only(['store','show']);
+    Route::apiResource('incomeProjections',IncomeProjectionController::class);
 
     Route::post('/send-sms',[SmsController::class,'sendSms']);
 
