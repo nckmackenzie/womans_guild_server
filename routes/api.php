@@ -17,8 +17,15 @@ use App\Http\Middleware\CustomAuthMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/login', [AuthController::class, 'login'])->withoutMiddleware([CustomAuthMiddleware::class]);
-Route::post('/forgotPassword', [AuthController::class, 'forgotPassword'])->withoutMiddleware([CustomAuthMiddleware::class]);
+Route::controller(AuthController::class)->group(function() {
+    Route::post('/login', 'login');
+    Route::post('/forgotPassword', 'forgotPassword');
+    Route::patch('/resetPassword', 'resetPassword');
+})->withoutMiddleware([CustomAuthMiddleware::class]);
+
+// Route::post('/login', [AuthController::class, 'login'])->withoutMiddleware([CustomAuthMiddleware::class]);
+// Route::post('/forgotPassword', [AuthController::class, 'forgotPassword'])->withoutMiddleware([CustomAuthMiddleware::class]);
+// Route::post('/forgotPassword', [AuthController::class, 'forgotPassword'])->withoutMiddleware([CustomAuthMiddleware::class]);
 
 Route::middleware([CustomAuthMiddleware::class])->group(function(){
     Route::get('/user', function (Request $request) {
