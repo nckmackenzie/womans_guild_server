@@ -44,7 +44,14 @@ class SmsController extends Controller
         $result = $this->smsService->sendSMS($contacts, $message);
 
         return response()->json(['status' => $result['status']]);
-      
+    }
+    
+    public function resetPasswordLink(String $token, String $contact)
+    {
+        $message = 'Your Password reset link: '.env('FRONTEND_URL').'/reset-password?token='.$token;
+        $contact = "+254" . substr($contact, 1);
+        $result = $this->smsService->sendSMS([$contact], $message);
+        return response()->json(['status' => $result['status']]);
     }
     /**
      * Display a listing of the resource.
