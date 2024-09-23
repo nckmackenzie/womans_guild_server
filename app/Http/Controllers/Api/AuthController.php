@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\SmsController;
 use App\Models\Session;
 use App\Models\User;
 use App\Services\SmsService;
@@ -70,6 +71,44 @@ class AuthController extends Controller
         return response()->json(['message' => 'Password updated successfully'], 200);
     }
 
+    public function resetPassword(Request $request)
+    {
+        $validated = Validator::make($request->all(), [
+            'token' => ['required'],
+            'password' => ['required','min:8'],
+            'confirm_password' => ['required','same:password'],
+        ]);
+
+        if($validated->fails()){
+            return response()->json(['errors' => $validated->errors()], 422);
+        }
+
+        $token = DB::table('password_resets')->where('token', $request->token)->first();
+        if(!$token){
+            return response()->json(['message' => 'Invalid token'], 401);
+        }
+
+        $user = User::where('id', $token->user_id)->first();
+
+        DB::beginTransaction();
+
+        try {
+
+            $user->update([
+                'password' => Hash::make($request->password),
+            ]);
+
+            DB::table('password_resets')->where('token', $request->token)->delete();
+            DB::commit();
+
+            return response()->json(['message' => 'Password updated successfully'], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error($e->getMessage());
+            return response()->json(['status' => 500, 'message' => 'Internal server error.'], 500);
+        }         
+    }
+
     public function forgotPassword(Request $request)
     {
         $validated = Validator::make($request->all(), [
@@ -80,6 +119,8 @@ class AuthController extends Controller
             return response()->json(['message' => 'You have entered an invalid phone number or one that isn\'t registered'], 422);
             // return response()->json(['errors' => $validated->errors()], 422);
         }
+
+        $smsController = new SmsController(new SmsService());
 
         $user = User::where('contact', $request->contact)->first();
         if(!$user){
@@ -93,7 +134,9 @@ class AuthController extends Controller
             'token' => $token,
         ]);
 
-        return response()->json(['message' => 'Password reset successful','token' => $token], 200);
+        $smsController->resetPasswordLink($token, $request->contact);
+
+        return response()->json(['message' => 'Password reset successful'], 200);
     }
 
     public function logout(Request $request)
