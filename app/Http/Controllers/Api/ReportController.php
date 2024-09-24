@@ -38,7 +38,7 @@ class ReportController extends Controller
                                          'description',
                                         )
                                  ->join('vote_heads','vote_heads.id','expenses.votehead_id')
-                                 ->join('members','members.id','expenses.member_id')
+                                 ->leftJoin('members','members.id','expenses.member_id')
                                  ->where('expenses.is_deleted',0)
                                  ->where('date','>=',date('Y-m-d',strtotime($request->from)))
                                  ->where('date','<=',date('Y-m-d',strtotime($request->to)));
