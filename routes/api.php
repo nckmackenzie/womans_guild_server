@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BudgetController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DummyController;
 use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\IncomeController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\Api\YearlyContributionController;
 use App\Http\Middleware\CustomAuthMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 Route::controller(AuthController::class)->group(function() {
     Route::post('/login', 'login');
@@ -35,6 +37,8 @@ Route::middleware([CustomAuthMiddleware::class])->group(function(){
 
     Route::patch('/changePassword', [AuthController::class, 'changePassword']);
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::get('/dashboard',[DashboardController::class,'index']);
 
     Route::post('/users',[UserController::class,'store']);
     Route::get('/users',[UserController::class,'index']);
@@ -97,7 +101,7 @@ Route::middleware([CustomAuthMiddleware::class])->group(function(){
 //     });
 // });
 
-// Route::get('/test',[DummyController::class,'index']);
+// Route::get('/test',[DashboardController::class,'index']);
 // Route::controller(ReportController::class)->group(function() {
 //     Route::get('/reports/budgetExpense','budgetExpense');
 // });
