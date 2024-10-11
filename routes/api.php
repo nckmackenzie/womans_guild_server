@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BudgetController;
+use App\Http\Controllers\Api\ClosingBalanceController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DummyController;
 use App\Http\Controllers\Api\ExpenseController;
@@ -47,6 +48,9 @@ Route::middleware([CustomAuthMiddleware::class])->group(function(){
     Route::patch('members/memberPromotion', [MemberController::class, 'memberPromotion']);
     Route::get('voteheads/byType',[VoteheadController::class,'voteheadByType']);
     Route::get('years/activeYears', [YearController::class, 'activeYears']);
+    Route::get('closingbalances/{id}/check',[ClosingBalanceController::class,'checkYear']);
+    Route::get('closingbalances/{id}/get',[ClosingBalanceController::class,'getClosingBalance']);
+    Route::apiResource('closingbalances',ClosingBalanceController::class)->only(['store']);
 
     Route::apiResource('years',YearController::class);
     Route::apiResource('voteheads',VoteheadController::class);
