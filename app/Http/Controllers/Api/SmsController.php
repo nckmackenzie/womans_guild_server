@@ -53,6 +53,39 @@ class SmsController extends Controller
         $result = $this->smsService->sendSMS([$contact], $message);
         return response()->json(['status' => $result['status']]);
     }
+
+    public function sendBalanceSms(Request $request)
+    {
+        $recipients = $request->recipients;
+        $failureCount = 0;
+        $successCount = 0;
+
+        if (!is_array($recipients)) {
+            return response()->json(['message' => 'Recipients must be an array'], 422);
+        }
+
+        if(!count($recipients)) {
+            return response()->json(['message' => 'At least one recipient is required'], 422);
+        }
+
+        foreach ($recipients as $recipient) {
+            $contact = $this->smsService->getContactById($recipient['id']);
+            $message = "Dear, ".ucfirst($recipient['name']).", your current balance is Ksh.".number_format($recipient['balance']) . 
+                       " Make a deposit towards clearing this balance.";
+            $result = $this->smsService->sendSMS([$contact], $message);
+            $response = $result['status'];
+            if($response === 'fail') {
+                $failureCount++;
+            }elseif ($response === 'success') {
+                $successCount++;
+            }
+        }
+
+        if($successCount === 0) return response()->json(['status' => 'fail', 'message' => 'Failed to send sms']);
+        if($successCount > 0 && $failureCount > 0) return response()->json(['status' => 'success', 'message' => "$successCount messages sent, $failureCount messages failed."]);
+        if($failureCount === 0) return response()->json(['status' => 'success', 'message' => 'Successfully sent sms']);
+
+    }
     /**
      * Display a listing of the resource.
      */
