@@ -34,7 +34,7 @@ class IncomeController extends Controller
                   ->orWhere('incomes.amount', 'like', "%{$request->search}%");
         }
         
-        $incomes = $query->orderBy('date', 'desc')->get();
+        $incomes = $query->orderBy('members.name', 'asc')->get();
         
         return response()->json(['data' => $incomes], 200);
     }
