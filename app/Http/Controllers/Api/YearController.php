@@ -92,7 +92,7 @@ class YearController extends Controller
 
     public function activeYears()
     {
-        $years = Year::where('is_closed',0)->select('id','name')->get();
+        $years = Year::where('is_closed',0)->select('id','name')->orderBy('created_at','desc')->get();
         return response()->json(['data' => $years]);
     }
 }
