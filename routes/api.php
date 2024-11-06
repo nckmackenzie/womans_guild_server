@@ -62,6 +62,7 @@ Route::middleware([CustomAuthMiddleware::class])->group(function(){
     Route::apiResource('incomeProjections',IncomeProjectionController::class);
 
     Route::post('/send-sms',[SmsController::class,'sendSms']);
+    Route::post('/send-balance-sms',[SmsController::class,'sendBalanceSms']);
 
     Route::controller(ReportController::class)->group(function() {
         Route::get('/reports/members','members');
