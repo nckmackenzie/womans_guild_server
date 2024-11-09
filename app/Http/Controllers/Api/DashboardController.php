@@ -9,6 +9,7 @@ use App\Models\Member;
 use App\Models\Year;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -20,15 +21,18 @@ class DashboardController extends Controller
 
         $startDate = $this->getFinancialYear()->start_date;
         $endDate = $this->getFinancialYear()->end_date;
+        $id = $this->getFinancialYear()->id;
 
         $totalMembers = Member::where('status', 'active')->where('is_deleted',0)->count();
         $totalExpenses = Expense::where('date', '>=', $startDate)->where('date', '<=', $endDate)->sum('amount');
         $totalIncomes = Income::where('date', '>=', $startDate)->where('date', '<=', $endDate)->sum('amount');
-        
+        $results = DB::select("CALL sp_closing_balances(?)",[$id]);
+
         $result = [
             'total_members' => $totalMembers,
             'total_expenses' => $totalExpenses,
-            'total_incomes' => $totalIncomes
+            'total_incomes' => $totalIncomes,
+            'closing_balances' => $results
         ];
 
         return response()->json(['data' => $result], 200);
